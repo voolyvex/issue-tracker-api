@@ -22,7 +22,7 @@ namespace issue_tracker_api.Controllers
             return await _context.Issues.ToListAsync();
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(Issue), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
@@ -48,6 +48,20 @@ namespace issue_tracker_api.Controllers
         {
             if (id != issue.Id) return BadRequest();
             _context.Entry(issue).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var issueToDelete = await _context.Issues.FindAsync(id);
+            if (issueToDelete == null) return NotFound();
+
+            _context.Issues.Remove(issueToDelete);
             await _context.SaveChangesAsync();
 
             return NoContent();
