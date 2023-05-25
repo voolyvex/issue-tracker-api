@@ -1,7 +1,13 @@
 using issue_tracker_api.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var conStrBuilder = new SqlConnectionStringBuilder(
+        builder.Configuration.GetConnectionString("SqlServer"));
+conStrBuilder.DataSource = builder.Configuration["SqlServerName"];
+var connection = conStrBuilder.ConnectionString;
 
 // Add services to the container.
 
@@ -24,6 +30,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.MapGet("/", () => connection);
 
 app.MapControllers();
 
